@@ -26,12 +26,19 @@ def authenticate_google_sheets():
         # Use the credentials from Streamlit secrets
         credentials_dict = st.secrets["google_credentials"]
         
-        credentials = Credentials.from_service_account_info(credentials_dict)
+        credentials = Credentials.from_service_account_info(
+            credentials_dict,
+            scopes=[
+                "https://spreadsheets.google.com/feeds",
+                "https://www.googleapis.com/auth/drive"
+            ],
+        )
         client = gspread.authorize(credentials)
         return client
     except Exception as e:
         st.error(f"Error authenticating with Google Sheets: {str(e)}")
         return None
+
 
 def update_google_sheet(data, selected_date):
     client = authenticate_google_sheets()
