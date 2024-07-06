@@ -9,76 +9,7 @@ st.set_page_config(page_title="GearFlow Ai", layout="wide")
 
 # Custom CSS for modern UI with new color scheme
 st.markdown("""
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
-    body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        color: white;
-        background-color: #1B1A55;
-    }
-    .reportview-container {
-        background: #1B1A55;
-    }
-    .main {
-        background: #070F2B;
-        padding: 3rem;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .stButton>button {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        background-color: #222831;
-        color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-        font-weight: bold;
-    }
-    .stTextInput>div>div>input {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        background-color: #535C91;
-        color: white;
-        border-radius: 5px;
-    }
-    .stTextArea>div>div>textarea {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        background-color: #1B1A55;
-        color: white;
-        border-radius: 5px;
-    }
-    .stDateInput>div>div>input {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        background-color: #1B1A55;
-        color: white;
-        border-radius: 5px;
-    }
-    h1, h2, p {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    }
-    h1 {
-        color: #E2DFD0;
-        font-weight: 700;
-    }
-    h2 {
-        color: #FF204E;
-        font-weight: 700;
-    }
-    p {
-        color: white;
-    }
-    .stAlert {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        background-color: #00224D;
-        color: white;
-    }
-    .readonly {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        pointer-events: none;
-        background-color: #070F2B !important;
-        color: white !important;
-    }
-</style>
 """, unsafe_allow_html=True)
 def test_sqlite_connection():
     try:
