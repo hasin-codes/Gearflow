@@ -24,10 +24,8 @@ h1, h2, h3 {
 def authenticate_google_sheets():
     try:
         # Use the credentials from Streamlit secrets
-        credentials_dict = st.secrets["google_credentials"]
-        
         credentials = Credentials.from_service_account_info(
-            credentials_dict,
+            st.secrets["google_credentials"],
             scopes=[
                 "https://spreadsheets.google.com/feeds",
                 "https://www.googleapis.com/auth/drive"
@@ -38,7 +36,6 @@ def authenticate_google_sheets():
     except Exception as e:
         st.error(f"Error authenticating with Google Sheets: {str(e)}")
         return None
-
 
 def update_google_sheet(data, selected_date):
     client = authenticate_google_sheets()
@@ -55,10 +52,12 @@ def update_google_sheet(data, selected_date):
         df = pd.DataFrame(data)
         
         new_worksheet.update([df.columns.values.tolist()] + df.values.tolist())
-        return True
+        
+        # Return the URL of the updated Google Sheet
+        return new_worksheet.url
     except Exception as e:
         st.error(f"Error updating Google Sheet: {str(e)}")
-        return False
+        return None
 
 def json_to_excel(data):
     df = pd.DataFrame(data)
@@ -117,10 +116,10 @@ def main():
                 )
 
                 with st.spinner("Updating Google Sheet..."):
-                    sheet_updated = update_google_sheet(json_data, selected_date)
+                    google_sheet_url = update_google_sheet(json_data, selected_date)
 
-                if sheet_updated:
-                    st.success("Google Sheet updated successfully!")
+                if google_sheet_url:
+                    st.success(f"Google Sheet updated successfully! You can see it [here]({google_sheet_url}).")
                 else:
                     st.warning("Failed to update Google Sheet. Please check the logs.")
 
