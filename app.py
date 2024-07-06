@@ -24,13 +24,9 @@ h1, h2, h3 {
 def authenticate_google_sheets():
     try:
         # Use the credentials from Streamlit secrets
-        credentials = Credentials.from_service_account_info(
-            st.secrets["gcp_service_account"],
-            scopes=[
-                "https://spreadsheets.google.com/feeds",
-                "https://www.googleapis.com/auth/drive"
-            ],
-        )
+        credentials_dict = st.secrets["google_credentials"]
+        
+        credentials = Credentials.from_service_account_info(credentials_dict)
         client = gspread.authorize(credentials)
         return client
     except Exception as e:
