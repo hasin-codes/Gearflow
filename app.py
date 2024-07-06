@@ -3,22 +3,60 @@ import json
 import pandas as pd
 from datetime import datetime
 from io import BytesIO
+import gspread
+from google.oauth2.service_account import Credentials
 
 # Custom theme and styling
-st.set_page_config(page_title="GearFlow Ai", layout="wide")
+st.set_page_config(page_title="GearFlow AI", layout="wide")
 
 # Custom CSS for modern UI with new color scheme
 st.markdown("""
-
+<style>
+body {
+    background-color: #f0f2f6;
+}
+h1, h2, h3 {
+    color: #333;
+}
+</style>
 """, unsafe_allow_html=True)
-def test_sqlite_connection():
+
+def authenticate_google_sheets():
     try:
-        conn = sqlite3.connect('test.db')
-        conn.close()
-        return "SQLite connection successful!"
-    except sqlite3.Error as e:
-        return f"SQLite connection failed: {e}"
-# Rest of your Python code remains the same
+        # Use the credentials from Streamlit secrets
+        credentials = Credentials.from_service_account_info(
+            st.secrets["gcp_service_account"],
+            scopes=[
+                "https://spreadsheets.google.com/feeds",
+                "https://www.googleapis.com/auth/drive"
+            ],
+        )
+        client = gspread.authorize(credentials)
+        return client
+    except Exception as e:
+        st.error(f"Error authenticating with Google Sheets: {str(e)}")
+        return None
+
+def update_google_sheet(data, selected_date):
+    client = authenticate_google_sheets()
+    if not client:
+        return False
+
+    try:
+        sheet = client.open_by_url('https://docs.google.com/spreadsheets/d/1zTSpmjkItId-4S1u-_RvLBu4jOT1c7YUwaa39AlpASE/edit?usp=sharing')
+        
+        worksheet_title = f"Orders_{selected_date.strftime('%Y%m%d_%H%M%S')}"
+        
+        new_worksheet = sheet.add_worksheet(title=worksheet_title, rows="100", cols="20")
+        
+        df = pd.DataFrame(data)
+        
+        new_worksheet.update([df.columns.values.tolist()] + df.values.tolist())
+        return True
+    except Exception as e:
+        st.error(f"Error updating Google Sheet: {str(e)}")
+        return False
+
 def json_to_excel(data):
     df = pd.DataFrame(data)
     output = BytesIO()
@@ -54,14 +92,11 @@ def main():
     st.title("🚚 GearFlow AI")
     st.subheader("A F1RST GEAR AI tool")
 
-    # Initialize session state
     if 'report' not in st.session_state:
         st.session_state.report = ""
 
-    # Date selector
     selected_date = st.date_input("Select submission date", datetime.now())
 
-    # JSON input
     st.subheader("Enter Order Data")
     json_input = st.text_area("Paste your JSON data here", height=200)
 
@@ -70,7 +105,6 @@ def main():
             try:
                 json_data = json.loads(json_input)
 
-                # Generate Excel
                 excel_output = json_to_excel(json_data)
                 st.download_button(
                     label="📥 Download Spreadsheet",
@@ -79,7 +113,14 @@ def main():
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
 
-                # Generate Performance Report
+                with st.spinner("Updating Google Sheet..."):
+                    sheet_updated = update_google_sheet(json_data, selected_date)
+
+                if sheet_updated:
+                    st.success("Google Sheet updated successfully!")
+                else:
+                    st.warning("Failed to update Google Sheet. Please check the logs.")
+
                 st.session_state.report = generate_performance_report(json_data, selected_date)
 
                 st.success("Performance Report generated successfully!")
@@ -89,12 +130,10 @@ def main():
         else:
             st.warning("Please enter JSON data.")
 
-    # Display report if it exists
     if st.session_state.report:
         st.subheader("📊 Performance Report")
         st.markdown(f"```\n{st.session_state.report}\n```")
 
-        # Instructions
         st.markdown("**Instructions:**")
         st.markdown("Send this generated text to Hasin & F1RST GEAR Messenger Group right now.")
         st.markdown("**Thank you for your hard work and dedication today. Your efforts are the driving force behind F1rst Gear's success. Please take this time to rest and recharge. You've earned it!\nGoodnight and rest well**.")
