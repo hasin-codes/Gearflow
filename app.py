@@ -9,14 +9,15 @@ import gspread
 from google.oauth2.service_account import Credentials
 import base64
 
-# Custom theme and styling
+# Yo, check out this sick page config!
 st.set_page_config(page_title="GearFlow AI", layout="wide")
 
-# Custom CSS for modern UI with new color scheme
+# CSS magic to make this app look lit AF 🔥
 st.markdown("""
 <style>
 body {
     background-color: #f0f2f6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 h1, h2, h3 {
     color: #333;
@@ -25,7 +26,7 @@ h1, h2, h3 {
     background-color: #4CAF50;
     color: white;
     border: none;
-    padding: 10px 24px;
+    padding: 12px 24px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -33,19 +34,47 @@ h1, h2, h3 {
     margin: 4px 2px;
     cursor: pointer;
     border-radius: 4px;
+    transition: background-color 0.3s;
+}
+.stButton>button:hover {
+    background-color: #45a049;
 }
 .stTextArea>div>div>textarea {
     background-color: #ffffff;
     border: 1px solid #ddd;
     border-radius: 4px;
 }
+.output-box {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 15px;
+    margin-top: 20px;
+}
+.download-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+.download-button:hover {
+    background-color: #0056b3;
+}
+.centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 </style>
 """, unsafe_allow_html=True)
 
-# Configure the Gemini API
+# Setting up the Gemini API
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
-# Create the model
+# Creating the model
 generation_config = {
     "temperature": 1,
     "top_p": 0.95,
@@ -96,12 +125,11 @@ model = genai.GenerativeModel(
        - Amount (calculate based on the quantity: 1 unit = 650 taka, more than 1 unit = quantity * 650)
        - Note (size and quantity details)
 
-    5. Generate a summary text listing the total quantities for each size in two columns.
-
     Filter out all unnecessary information, remove redundant entries, remove email addresses, and format the remaining information as a JSON object with the specified fields. Calculate the amount based on the quantity (1 unit = 650 taka, more than 1 unit = quantity * 650). Then generate a summary text listing the total quantities for each size and perform the financial calculations as shown in the example.
     """
 )
 
+# Google Sheets authentication
 def authenticate_google_sheets():
     try:
         credentials = Credentials.from_service_account_info(
@@ -114,9 +142,10 @@ def authenticate_google_sheets():
         client = gspread.authorize(credentials)
         return client
     except Exception as e:
-        st.error(f"Error authenticating with Google Sheets: {str(e)}")
+        st.error(f"Oops, Google Sheets auth failed: {str(e)}")
         return None
 
+# Updating Google Sheets
 def update_google_sheet(data, selected_date):
     client = authenticate_google_sheets()
     if not client:
@@ -135,9 +164,10 @@ def update_google_sheet(data, selected_date):
         
         return new_worksheet.url
     except Exception as e:
-        st.error(f"Error updating Google Sheet: {str(e)}")
+        st.error(f"Ugh, couldn't update Google Sheet: {str(e)}")
         return None
 
+# Converting JSON to Excel cuz Excel is life 📊
 def json_to_excel(data):
     df = pd.DataFrame(data)
     output = BytesIO()
@@ -145,6 +175,7 @@ def json_to_excel(data):
         df.to_excel(writer, index=False)
     return output.getvalue()
 
+# Generating a performance report
 def generate_performance_report(data, selected_date):
     num_orders = len(data)
     total_revenue = num_orders * 650
@@ -169,30 +200,29 @@ Operational Manager signing off."""
 
     return report
 
+# Creating a sick download link for JSON 🔗
 def get_download_link(json_data, filename="orders.json"):
     b64 = base64.b64encode(json_data.encode()).decode()
-    return f'<a href="data:file/json;base64,{b64}" download="{filename}" class="stButton">Download JSON</a>'
+    return f'<a href="data:file/json;base64,{b64}" download="{filename}" class="download-button">Download JSON</a>'
 
 def main():
-    st.title("🚚 GearFlow AI")
-    st.subheader("A F1RST GEAR AI tool")
+    st.title("🏎️🏁 GearFlow AI")
+    st.subheader("The Intelligent Order Management Solution")
 
     if 'report' not in st.session_state:
         st.session_state.report = ""
     if 'json_data' not in st.session_state:
         st.session_state.json_data = ""
 
-    selected_date = st.date_input("Select submission date", datetime.now())
-
-    tab1, tab2 = st.tabs(["Text to JSON", "JSON to Report"])
+    tab1, tab2 = st.tabs(["Convert Text to JSON", "Generate Report from JSON"])
 
     with tab1:
-        st.subheader("Enter Order Data")
-        user_input = st.text_area("Paste your order information here", height=200)
+        st.subheader("Order Data Entry")
+        user_input = st.text_area("Paste your customer order details here", height=200)
 
         if st.button("Process Orders", key="process_orders"):
             if user_input:
-                with st.spinner("Processing orders..."):
+                with st.spinner("Processing orders... Hold tight!"):
                     try:
                         response = model.generate_content(user_input)
                         
@@ -206,59 +236,66 @@ def main():
                         st.subheader("Processed Orders:")
                         try:
                             orders = json.loads(json_data)
-                            st.json(orders)
+                            st.code(json.dumps(orders, indent=2), language="json")
                             st.session_state.json_data = json_data
                             
-                            st.markdown(get_download_link(json_data), unsafe_allow_html=True)
+                            st.markdown(f'<div class="centered">{get_download_link(json_data)}</div>', unsafe_allow_html=True)
                         except json.JSONDecodeError:
-                            st.error("Error parsing JSON data")
+                            st.error("Oops, couldn't parse that JSON. My bad!")
                         
                         st.subheader("Summary:")
-                        st.text(summary)
+                        st.markdown(f'<div class="output-box">{summary}</div>', unsafe_allow_html=True)
 
                         st.success("Orders processed successfully!")
                     except Exception as e:
-                        st.error(f"An error occurred while processing the orders: {str(e)}")
+                        st.error(f"Ugh, something went wrong while processing orders: {str(e)}")
             else:
-                st.warning("Please enter order information.")
+                st.warning("Yo, enter some order info first!")
 
     with tab2:
         st.subheader("Generate Report from JSON")
+        
+        # Only show the date input in the "JSON to Report" tab
+        selected_date = st.date_input("Select submission date", datetime.now())
+        
         json_input = st.text_area("Paste your JSON data here", value=st.session_state.json_data, height=200)
 
-        if st.button("Generate Report", key="generate_report"):
-            if json_input:
-                try:
-                    json_data = json.loads(json_input)
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Generate Report", key="generate_report"):
+                if json_input:
+                    try:
+                        json_data = json.loads(json_input)
 
-                    excel_output = json_to_excel(json_data)
-                    st.download_button(
-                        label="📥 Download Spreadsheet",
-                        data=excel_output,
-                        file_name=f"order_data_{selected_date}.xlsx",
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    )
+                        excel_output = json_to_excel(json_data)
+                        with col2:
+                            st.download_button(
+                                label="📥 Download Spreadsheet",
+                                data=excel_output,
+                                file_name=f"order_data_{selected_date}.xlsx",
+                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                            )
 
-                    with st.spinner("Updating Google Sheet..."):
-                        google_sheet_url = update_google_sheet(json_data, selected_date)
+                        with st.spinner("Updating Google Sheet... Don't touch anything!"):
+                            google_sheet_url = update_google_sheet(json_data, selected_date)
 
-                    if google_sheet_url:
-                        st.success(f"Google Sheet updated successfully! You can see it [here]({google_sheet_url}).")
-                    else:
-                        st.warning("Failed to update Google Sheet. Please check the logs.")
+                        if google_sheet_url:
+                            st.success(f"Google Sheet updated boss! Check it out [here]({google_sheet_url}).")
+                        else:
+                            st.warning("Oof, couldn't update the Google Sheet. Check the logs or dual input?")
 
-                    st.session_state.report = generate_performance_report(json_data, selected_date)
+                        st.session_state.report = generate_performance_report(json_data, selected_date)
 
-                    st.success("Performance Report generated successfully!")
+                        st.success("Performance Report generated! 💪")
 
-                except json.JSONDecodeError:
-                    st.error("Invalid JSON data. Please check your input.")
-            else:
-                st.warning("Please enter JSON data.")
+                    except json.JSONDecodeError:
+                        st.error("Bruh, that JSON is wack. Fix it up!")
+                else:
+                    st.warning("Yo, you gotta enter some JSON data first!")
 
     if st.session_state.report:
         st.subheader("📊 Performance Report")
-        st.markdown(f"```\n{st.session_state.report}\n```")
+        st.markdown(f'<div class="output-box"><pre>{st.session_state.report}</pre></div>', unsafe_allow_html=True)
 
         st.markdown("**Instructions:**")
         st.markdown("Send this generated text to Hasin & F1RST GEAR Messenger Group right now.")
