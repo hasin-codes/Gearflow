@@ -1,0 +1,111 @@
+@font-face {
+    font-family: 'SF UI Display';
+    src: url('font/sf-ui-display-black-58646a6b80d5a.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'SF UI Display';
+    src: url('font/sf-ui-display-bold-58646a511e3d9.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'SF UI Display';
+    src: url('font/sf-ui-display-heavy-587010160b9e5.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'SF UI Display';
+    src: url('font/sf-ui-display-light-58646b33e0551.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'SF UI Display';
+    src: url('font/sf-ui-display-medium-58646be638f96.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'SF UI Display';
+    src: url('font/sf-ui-display-semibold-58646eddcae92.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'SF UI Display';
+    src: url('font/sf-ui-display-thin-58646e9b26e8b.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'SF UI Display';
+    src: url('font/sf-ui-display-ultralight-58646b19bf205.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+}
+body {
+    background-color: #f0f2f6;
+    font-family: 'SF UI Display', sans-serif;
+}
+h1, h2, h3 {
+    color: #333;
+    font-family: 'SF UI Display', sans-serif;
+    font-weight: 700;
+}
+.stButton>button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+    font-family: 'SF UI Display', sans-serif;
+    font-weight: 600;
+}
+.stButton>button:hover {
+    background-color: #45a049;
+}
+.stTextArea>div>div>textarea {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'SF UI Display', sans-serif;
+    font-weight: 400;
+}
+.output-box {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 15px;
+    margin-top: 20px;
+    font-family: 'SF UI Display', sans-serif;
+    font-weight: 400;
+}
+.download-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+    font-family: 'SF UI Display', sans-serif;
+    font-weight: 600;
+}
+.download-button:hover {
+    background-color: #0056b3;
+}
+.centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

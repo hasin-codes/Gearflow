@@ -12,64 +12,13 @@ import base64
 # Yo, check out this sick page config!
 st.set_page_config(page_title="GearFlow AI", layout="wide")
 
-# CSS magic to make this app look lit AF 🔥
-st.markdown("""
-<style>
-body {
-    background-color: #f0f2f6;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-h1, h2, h3 {
-    color: #333;
-}
-.stButton>button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-}
-.stButton>button:hover {
-    background-color: #45a049;
-}
-.stTextArea>div>div>textarea {
-    background-color: #ffffff;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-.output-box {
-    background-color: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 4px;
-    padding: 15px;
-    margin-top: 20px;
-}
-.download-button {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    text-decoration: none;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-}
-.download-button:hover {
-    background-color: #0056b3;
-}
-.centered {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-</style>
-""", unsafe_allow_html=True)
+# Function to load CSS
+def load_css(file_name):
+    with open(file_name) as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+
+# Load the CSS
+load_css('style.css')
 
 # Setting up the Gemini API
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
